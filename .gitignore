@@ -2,3 +2,4 @@
 .DS_Store
 !.gitkeep
 venv
+__pycache__
