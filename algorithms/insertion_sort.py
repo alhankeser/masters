@@ -1,15 +1,15 @@
 import sys
 
 sys.path.append("./")
-from meta import utils
+from helpers import utils
 import operator
 from typing import Tuple, List, Literal, Callable, Dict
 
 """
 Insertion Sort algorithm as described in Chapter 2 
 of INTRODUCTION TO ALGORITHMS 3rd Edition
-with a couple naive attempts at optimization without 
-fundamentally changing the overall approach
+with a couple naive optimizations while 
+staying true to the general approach
 """
 
 OPERATORS = {"asc": "lt", "desc": "gt"}
@@ -66,26 +66,25 @@ def get_shortcut_index(
 
 def insertion_sort(
     input_array: List[int],
+    optimize: bool = False,
+    skip_interval: int = 150,
     sort_order: Literal["asc", "desc"] = "asc",
-    only_distinct: bool = False,
-    use_shortcuts: bool = False,
-    shortcut_interval: int = 10,
 ) -> List[int]:
     comparison = getattr(operator, OPERATORS[sort_order])
     output_array: List[int] = []
     output_count: Dict[int, int] = {}
-    shortcut_refresh_limit = shortcut_interval
+    shortcut_refresh_limit = skip_interval
     shortcut_subset: List[int] = []
     for i, current_value in enumerate(input_array):
-        if only_distinct and current_value in output_array:
+        if optimize and current_value in output_array:
             output_count[current_value] += 1
             continue
         output_len = len(output_array)
         compare_idx = output_len - 1
-        if use_shortcuts:
+        if optimize:
             compare_idx, shortcut_refresh_limit, shortcut_subset = get_shortcut_index(
                 compare_idx,
-                shortcut_interval,
+                skip_interval,
                 comparison,
                 output_array,
                 shortcut_refresh_limit,
@@ -97,9 +96,9 @@ def insertion_sort(
             compare_idx, comparison, current_value, output_array
         )
         output_array.insert(insert_at_idx, current_value)
-        if only_distinct:
+        if optimize:
             output_count[current_value] = 1
-    if only_distinct:
+    if optimize:
         for key, count in output_count.items():
             if count > 1:
                 insert_at_idx = output_array.index(key)
@@ -119,12 +118,6 @@ if __name__ == "__main__":
 
     input_array = utils.get_random_numbers(n, n_min, n_max)
 
-    output_array = insertion_sort(
-        input_array=input_array,
-        sort_order="asc",
-        only_distinct=True,
-        use_shortcuts=True,
-        shortcut_interval=150,
-    )
+    output_array = insertion_sort(input_array=input_array, optimize=True)
 
     print(output_array)

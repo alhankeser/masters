@@ -40,12 +40,16 @@ def make_array_file(n: int, n_min: int = 0, n_max: int = 1, name: str = "input")
     return path
 
 
-def get_timing(func: Callable, input_arr: List[int], args: Dict[str, Any]) -> float:
-    return timeit.timeit(lambda: func(input_arr, **args), number=1)
+def get_timing(
+    func: Callable, input_arr: List[int], args: Dict[str, Any], iterations: int = 1
+) -> float:
+    total_time = timeit.timeit(lambda: func(input_arr, **args), number=iterations)
+    mean_time = total_time / iterations
+    return mean_time
 
 
 def compare_timing(
-    funcs: List[Dict[Any, Any]], n_list: List[int], make_input_file: bool = False
+    funcs: List[Dict[Any, Any]], n_list: List[int], iterations: int = 1
 ) -> List[Dict[Any, Any]]:
     results: List[Dict[Any, Any]] = []
     input_file_name = "compare_timing_input"
@@ -55,7 +59,12 @@ def compare_timing(
     input_arr_source = read_array_file(path)
     for func, n in list(product(funcs, n_list)):
         input_arr = input_arr_source[:n]
-        timing = get_timing(func=func["func"], input_arr=input_arr, args=func["args"])
+        timing = get_timing(
+            func=func["func"],
+            input_arr=input_arr,
+            args=func["args"],
+            iterations=iterations,
+        )
         func_name = func["func"].__name__
         version = str(func["args"])
         results.append(
