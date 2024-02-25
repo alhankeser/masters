@@ -1,11 +1,9 @@
 import sys
 
 sys.path.append("./")
-from utils import utils
-import timeit
+from meta import utils
 import operator
-import pandas as pd
-import matplotlib.pyplot as plt
+from typing import Tuple, List, Literal, Callable, Dict
 
 """
 Insertion Sort algorithm as described in Chapter 2 
@@ -17,39 +15,45 @@ fundamentally changing the overall approach
 OPERATORS = {"asc": "lt", "desc": "gt"}
 
 
-def get_insertion_index(i, comparison, value, array):
+def get_insertion_index(
+    i: int, comparison: Callable, value: int, arr: List[int]
+) -> int:
     insert_at_idx = i + 1
-    if len(array) == 0:
+    if len(arr) == 0:
         return insert_at_idx
-    while i > -1 and comparison(value, array[i]):
+    while i > -1 and comparison(value, arr[i]):
         insert_at_idx = i
         i -= 1
     return insert_at_idx
 
 
-def refresh_shortcut_subset(interval, array, subset, output_len, len_rounded):
+def refresh_shortcut_subset(
+    interval: int,
+    arr: List[int],
+    subset: List[int],
+    output_len: int,
+    len_rounded: int,
+) -> List[int]:
     increment_by = int(interval / 2)
     for shortcut_idx in range(increment_by, output_len - increment_by, increment_by):
-        subset.append(array[shortcut_idx])
-    refresh_limit = len_rounded
-    return subset, refresh_limit
+        subset.append(arr[shortcut_idx])
+    return subset
 
 
 def get_shortcut_index(
-    compare_idx,
-    interval,
-    comparison,
-    array,
-    refresh_limit,
-    subset,
-    current_value,
-    output_len,
-):
+    compare_idx: int,
+    interval: int,
+    comparison: Callable,
+    arr: List[int],
+    refresh_limit: int,
+    subset: List[int],
+    current_value: int,
+    output_len: int,
+) -> Tuple[int, int, List[int]]:
     len_rounded = (output_len // interval) * interval
     if len_rounded > refresh_limit:
-        subset, refresh_limit = refresh_shortcut_subset(
-            interval, array, subset, output_len, len_rounded
-        )
+        subset = refresh_shortcut_subset(interval, arr, subset, output_len, len_rounded)
+    refresh_limit = len_rounded
     subset_len = len(subset)
     shortcut_idx = subset_len - 1
     shortcut_idx = get_insertion_index(shortcut_idx, comparison, current_value, subset)
@@ -57,21 +61,21 @@ def get_shortcut_index(
         return compare_idx, refresh_limit, subset
     else:
         subset_compare_value = subset[shortcut_idx]
-        return array.index(subset_compare_value), refresh_limit, subset
+        return arr.index(subset_compare_value), refresh_limit, subset
 
 
-def main(
-    input_array,
-    sort_order="asc",
-    only_distinct=False,
-    use_shortcuts=False,
-    shortcut_interval=10,
-):
+def insertion_sort(
+    input_array: List[int],
+    sort_order: Literal["asc", "desc"] = "asc",
+    only_distinct: bool = False,
+    use_shortcuts: bool = False,
+    shortcut_interval: int = 10,
+) -> List[int]:
     comparison = getattr(operator, OPERATORS[sort_order])
-    output_array = []
-    output_count = {}
+    output_array: List[int] = []
+    output_count: Dict[int, int] = {}
     shortcut_refresh_limit = shortcut_interval
-    shortcut_subset = []
+    shortcut_subset: List[int] = []
     for i, current_value in enumerate(input_array):
         if only_distinct and current_value in output_array:
             output_count[current_value] += 1
@@ -104,40 +108,23 @@ def main(
 
 
 if __name__ == "__main__":
-    n = 100_000
-    min_n = 1
-    max_n = n
+    try:
+        sys_argv = int(sys.argv[1])
+    except:
+        sys_argv = 10
 
-    path = utils.get_path("inputs", "insertion_sort_input")
-    input_array_source = utils.get_random_numbers(n, min_n, max_n)
-    # utils.write_array_to_file(input_array, path)
-    # input_array = utils.read_array_file(path)
+    n = sys_argv
+    n_min = 0
+    n_max = n
 
-    output_array = main(
-        input_array = input_array_source,
+    input_array = utils.get_random_numbers(n, n_min, n_max)
+
+    output_array = insertion_sort(
+        input_array=input_array,
         sort_order="asc",
         only_distinct=True,
         use_shortcuts=True,
         shortcut_interval=150,
     )
 
-    """
-    Compare timings
-    """
-    # timing_results = {}
-    # for optimizations_enabled in [True, False]:
-    #     timing_results[optimizations_enabled] = {}
-    #     for n_len in [10, 100, 1_000, 10_000, 100_000]:
-    #         input_array = input_array_source[:n_len-1]
-    #         timing_results[optimizations_enabled][n_len] = timeit.timeit(
-    #             lambda: main(
-    #                 input_array=input_array,
-    #                 sort_order="asc",
-    #                 only_distinct=optimizations_enabled,
-    #                 use_shortcuts=optimizations_enabled,
-    #                 shortcut_interval=150,
-    #             ),
-    #             number=1,
-    #         )
-    # pd.DataFrame.from_dict(timing_results).plot(grid=True, marker='o', linestyle='-')
-    # plt.savefig('./outputs/insertion_sort.png')
+    print(output_array)
