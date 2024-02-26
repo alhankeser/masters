@@ -65,17 +65,19 @@ def get_shortcut_index(
 
 
 def insertion_sort(
-    input_array: List[int],
+    arr: List[int],
     optimize: bool = False,
     skip_interval: int = 150,
     sort_order: Literal["asc", "desc"] = "asc",
 ) -> List[int]:
+    if len(arr) <= 1:
+        return arr
     comparison = getattr(operator, OPERATORS[sort_order])
     output_array: List[int] = []
     output_count: Dict[int, int] = {}
     shortcut_refresh_limit = skip_interval
     shortcut_subset: List[int] = []
-    for i, current_value in enumerate(input_array):
+    for i, current_value in enumerate(arr):
         if optimize and current_value in output_array:
             output_count[current_value] += 1
             continue
@@ -116,8 +118,8 @@ if __name__ == "__main__":
     n_min = 0
     n_max = n
 
-    input_array = utils.get_random_numbers(n, n_min, n_max)
+    arr = utils.get_random_numbers(n, n_min, n_max)
 
-    output_array = insertion_sort(input_array=input_array, optimize=True)
+    output_array = insertion_sort(arr=arr, optimize=True)
 
     print(output_array)
