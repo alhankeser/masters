@@ -6,65 +6,52 @@ from insertion_sort import insertion_sort
 from typing import Tuple, List, Union
 
 
-def split_array(
-    arr: List[int], min_leaf: int = 2
-) -> List[List[int]]:
-    output = []
-    if len(arr) < min_leaf:
-        output.append(arr)
-    while len(arr) >= min_leaf:
-        output.append(arr[:min_leaf])
-        arr = arr[min_leaf:]
-    return output
+"""
+Merge Sort algorithm as described in Chapter 2 
+of INTRODUCTION TO ALGORITHMS 3rd Edition
+"""
 
 
-def sort_arrays(
-    arrays: List[List[int]], optimize: bool = False
-) -> List[List[int]]:
-    output = []
-    for arr in arrays:
-        output.append(insertion_sort(input_array=arr, optimize=optimize))
-    return output
+def split_array(arr: List[int]) -> Tuple[List[int], List[int]]:
+    midpoint = (len(arr) - 1) // 2 + 1
+    return arr[:midpoint], arr[midpoint:]
 
 
-def merge_arrays(arrays: List[List[int]]) -> List[List[int]]:
-    if len(arrays) < 2:
-        return arrays
-    arr1, arr2 = arrays[:2]
-    merged = []
-    while len(arr1) > 0 and len(arr2) > 0:
-        if arr1[0] <= arr2[0]:
-            merged.append(arr1[0])
-            arr1.pop(0)
+def merge_arrays(arr1: List[int], arr2: List[int]) -> List[int]:
+    result = []
+    i = 0
+    j = 0
+    while i < len(arr1) and j < len(arr2):
+        if arr1[i] <= arr2[j]:
+            result.append(arr1[i])
+            i += 1
         else:
-            merged.append(arr2[0])
-            arr2.pop(0)
-    arrays = arrays[2:] + [merged + arr1 + arr2]
-    return arrays
+            result.append(arr2[j])
+            j += 1
+    result = result + arr1[i:] + arr2[j:]
+    return result
 
 
-def merge_sort(
-    input_array: List[int], min_leaf: int = 2, optimize: bool = False
-) -> Union[List[int], List[List[int]]]:
-    arrays = split_array(arr=input_array, min_leaf=min_leaf)
-    sorted_arrays = sort_arrays(arrays=arrays, optimize=optimize)
-    while len(sorted_arrays) > 1:
-        sorted_arrays = merge_arrays(sorted_arrays)
-    output_array = sorted_arrays[0]
-    return output_array
+def merge_sort(arr: List[int], min_leaf: int = 1) -> List[int]:
+    if len(arr) <= min_leaf:
+        return insertion_sort(arr=arr)
+    arr1, arr2 = split_array(arr=arr)
+    arr1 = merge_sort(arr1)
+    arr2 = merge_sort(arr2)
+    result = merge_arrays(arr1, arr2)
+    return result
 
 
 if __name__ == "__main__":
     try:
         sys_argv = int(sys.argv[1])
     except:
-        sys_argv = 10_000
+        sys_argv = 10
 
     n = sys_argv
     n_min = 0
     n_max = n
 
-    input_array = utils.get_random_numbers(n, n_min, n_max)
-
-    output_array = merge_sort(input_array=input_array, min_leaf=100)
-    print(output_array)
+    arr = utils.get_random_numbers(n, n_min, n_max)
+    result = merge_sort(arr=arr)
+    print(result)
