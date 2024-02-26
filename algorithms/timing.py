@@ -10,17 +10,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+import subprocess
 
 
 def builtin_sort(arr: list[int]) -> list[int]:
     return sorted(arr)
 
+def c_insertion_sort(str_arr: list[str]) -> None:
+    subprocess.call(["c/insertion_sort"] + str_arr)
 
 funcs = [
-    {
-        "func": bubble_sort,
-        "args": {},
-    },
+    # {
+    #     "func": bubble_sort,
+    #     "args": {},
+    # },
     {
         "func": insertion_sort,
         "args": {},
@@ -45,10 +48,14 @@ funcs = [
         "func": builtin_sort,
         "args": {},
     },
+    {
+        "func": c_insertion_sort,
+        "args": {}
+    }
 ]
-n_min = 100
-n_max = 1000
-increment = 100
+n_min = 1_000
+n_max = 10_000
+increment = 1_000
 iterations = 1
 n_list = np.linspace(
     n_min, n_max, num=(n_max - n_min) // increment + 1, dtype=int

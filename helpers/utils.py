@@ -59,13 +59,15 @@ def compare_timing(
     input_arr_source = read_array_file(path)
     for func, n in list(product(funcs, n_list)):
         input_arr = input_arr_source[:n]
+        func_name = func["func"].__name__
+        if func_name[:2] == "c_":
+            input_arr = [str(n) for n in input_arr]
         timing = get_timing(
             func=func["func"],
             input_arr=input_arr,
             args=func["args"],
             iterations=iterations,
         )
-        func_name = func["func"].__name__
         version = str(func["args"])
         results.append(
             {"func": func_name, "version": version, "n": n, "timing": timing}
