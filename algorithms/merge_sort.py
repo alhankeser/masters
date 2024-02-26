@@ -8,14 +8,14 @@ from typing import Tuple, List, Union
 
 def split_array(
     arr: List[int], min_leaf: int = 2
-) -> Tuple[List[int], List[List[int]]]:
+) -> List[List[int]]:
     output = []
     if len(arr) < min_leaf:
         output.append(arr)
     while len(arr) >= min_leaf:
         output.append(arr[:min_leaf])
         arr = arr[min_leaf:]
-    return arr, output
+    return output
 
 
 def sort_arrays(
@@ -46,7 +46,7 @@ def merge_arrays(arrays: List[List[int]]) -> List[List[int]]:
 def merge_sort(
     input_array: List[int], min_leaf: int = 2, optimize: bool = False
 ) -> Union[List[int], List[List[int]]]:
-    arrays = split_array(arr=input_array, min_leaf=min_leaf)[1]
+    arrays = split_array(arr=input_array, min_leaf=min_leaf)
     sorted_arrays = sort_arrays(arrays=arrays, optimize=optimize)
     while len(sorted_arrays) > 1:
         sorted_arrays = merge_arrays(sorted_arrays)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     try:
         sys_argv = int(sys.argv[1])
     except:
-        sys_argv = 10
+        sys_argv = 10_000
 
     n = sys_argv
     n_min = 0
