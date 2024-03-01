@@ -3,20 +3,19 @@ const print = std.debug.print;
 const ArrayList = std.ArrayList;
 
 fn insertionSort(arr: std.ArrayList(u32)) void {
-   var current_index: u32 = 1;
-   while (current_index < arr.items.len) {
-      const current_value: u32 = arr.items[current_index];
-      var comparison_index: u32  = current_index - 1;
-      while (comparison_index >= 0 and current_value < arr.items[comparison_index]) {
-         arr.items[comparison_index + 1] = arr.items[comparison_index];
-         arr.items[comparison_index] = current_value;
-         if (comparison_index > 0) {
-            comparison_index -= 1;
-         }
-      }
-      current_index += 1;
-   }
-   // return arr;
+    var current_index: u32 = 1;
+    while (current_index < arr.items.len) {
+        const current_value: u32 = arr.items[current_index];
+        var comparison_index: u32 = current_index - 1;
+        while (comparison_index >= 0 and current_value < arr.items[comparison_index]) {
+            arr.items[comparison_index + 1] = arr.items[comparison_index];
+            arr.items[comparison_index] = current_value;
+            if (comparison_index > 0) {
+                comparison_index -= 1;
+            }
+        }
+        current_index += 1;
+    }
 }
 
 pub fn main() !void {
@@ -39,16 +38,15 @@ pub fn main() !void {
     defer input_array.deinit();
 
     while (iterator.next()) |raw| {
-      const n: u32 = try std.fmt.parseInt(u32, raw, 10); 
+        const n: u32 = try std.fmt.parseInt(u32, raw, 10);
 
-      if (@TypeOf(n) == u32) {
-         try input_array.append(n);
-      }
-      else {
-         // print("Error\n", .{});
-      }
+        if (@TypeOf(n) == u32) {
+            try input_array.append(n);
+        } else {
+            // print("Error\n", .{});
+        }
     }
-    
+
     insertionSort(input_array);
-   //  print("{any}", .{input_array.items});
+    // print("{any}\n", .{input_array.items});
 }

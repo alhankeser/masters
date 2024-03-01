@@ -3,6 +3,7 @@ import sys
 sys.path.append("./")
 from helpers import utils
 from algorithms.insertion_sort import insertion_sort
+from algorithms.insertion_sort_simple import insertion_sort_simple_np, insertion_sort_simple_list
 from algorithms.merge_sort import merge_sort
 from algorithms.bubble_sort import bubble_sort
 import pandas as pd
@@ -37,6 +38,14 @@ funcs = [
     # {
     #     "func": insertion_sort,
     #     "args": {"optimize": True},
+    # },
+    # {
+    #     "func": insertion_sort_simple_np,
+    #     "args": {},
+    # },
+    # {
+    #     "func": insertion_sort_simple_list,
+    #     "args": {},
     # },
     {
         "func": merge_sort,
