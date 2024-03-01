@@ -21,11 +21,7 @@ def get_path(dir: str, name: str, file_extension: str = "gz") -> Dict[str, str]:
     }
 
 
-def write_array_to_file(
-    input_array: List[int], path: Dict[str, str], insert_len: bool = False
-) -> Dict[str, str]:
-    if insert_len:
-        input_array.insert(0, len(input_array))
+def write_array_to_file(input_array: List[int], path: Dict[str, str]) -> Dict[str, str]:
     if path["file_extension"] == "gz":
         arr = array.array("i", input_array)
         with gzip.open(path["name"], "wb") as gzfile:
@@ -91,21 +87,24 @@ def compare_timing(
     for func, n in list(product(funcs, n_list)):
         input_arr = input_arr_source[:n]
         func_name = func["func"].__name__
-        if func_name[:2] == "c_":
+        if func_name[:2] == "c_" or func_name[:4] == "zig_":
             c_path = get_path(
-                dir="inputs", name=f"c_{input_file_name}", file_extension="txt"
+                dir="inputs", name=f"temp_{input_file_name}", file_extension="txt"
             )
-            input_arr_path = write_array_to_file(
-                input_array=input_arr, path=c_path, insert_len=True
-            )
-            input_arr = []
+            input_arr_path = write_array_to_file(input_array=input_arr, path=c_path)
             func["args"]["filepath"] = input_arr_path["name"]
+            func["args"]["array_len"] = len(input_arr)
         timing = get_timing(
             func=func["func"],
             input_arr=input_arr,
             args=func["args"],
             iterations=iterations,
         )
+        try:
+            del func["args"]["filepath"]
+            del func["args"]["array_len"]
+        except:
+            pass
         version = str(func["args"])
         results.append(
             {"func": func_name, "version": version, "n": n, "timing": timing}

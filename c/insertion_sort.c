@@ -2,13 +2,14 @@
 #include <stdlib.h>
 
 // Off-the-shelf algo used to compare speed to other languages
+// Expects filepath as arg1 and length as arg2
 
 void insertionSort(int arr[], int n) {
     int i, key, j;
     for (i = 1; i < n; i++) {
         key = arr[i];
         j = i - 1;
-        while (j >= 0 && arr[j] > key) {
+        while (j >= 0 && key < arr[j]) {
             arr[j + 1] = arr[j];
             j = j - 1;
         }
@@ -17,23 +18,23 @@ void insertionSort(int arr[], int n) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <input_file>\n", argv[0]);
-        return 1;
-    }
+    // if (argc != 3) {
+    //     printf("Usage: %s <input_file> <num_elements>\n", argv[0]);
+    //     return 1;
+    // }
 
     FILE *file = fopen(argv[1], "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 1;
-    }
+    // if (file == NULL) {
+    //     perror("Error opening file");
+    //     return 1;
+    // }
 
-    int n;
-    if (fscanf(file, "%d\n", &n) != 1) {
-        perror("Error reading size from file");
-        fclose(file);
-        return 1;
-    }
+    int n = atoi(argv[2]);
+    // if (n <= 0) {
+    //     printf("Invalid number of elements: %s\n", argv[2]);
+    //     fclose(file);
+    //     return 1;
+    // }
 
     int *numbers = (int *)malloc(n * sizeof(int));
 
@@ -50,7 +51,6 @@ int main(int argc, char *argv[]) {
 
     insertionSort(numbers, n);
 
-    // Print the sorted array
     // for (int i = 0; i < n; i++) {
     //     printf("%d ", numbers[i]);
     // }

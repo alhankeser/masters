@@ -17,12 +17,12 @@ def builtin_sort(arr: list[int]) -> list[int]:
     return sorted(arr)
 
 
-def c_insertion_sort(input_array: list[int] = [], filepath: str) -> None:
-    subprocess.call(["c/insertion_sort", filepath])
+def c_insertion_sort(input_array: list[int], filepath: str, array_len: int) -> None:
+    subprocess.call(["c/insertion_sort", filepath, str(array_len)])
 
 
-def zig_insertion_sort(input_array: list[int] = [], filepath: str) -> None:
-    subprocess.call(["zig/insertion_sort", filepath])
+def zig_insertion_sort(input_array: list[int], filepath: str, array_len: int) -> None:
+    subprocess.call(["zig/insertion_sort", filepath, str(array_len)])
 
 
 funcs = [
@@ -30,14 +30,14 @@ funcs = [
     #     "func": bubble_sort,
     #     "args": {},
     # },
-    {
-        "func": insertion_sort,
-        "args": {},
-    },
-    {
-        "func": insertion_sort,
-        "args": {"optimize": True},
-    },
+    # {
+    #     "func": insertion_sort,
+    #     "args": {},
+    # },
+    # {
+    #     "func": insertion_sort,
+    #     "args": {"optimize": True},
+    # },
     {
         "func": merge_sort,
         "args": {
@@ -57,9 +57,9 @@ funcs = [
     {"func": c_insertion_sort, "args": {}},
     {"func": zig_insertion_sort, "args": {}},
 ]
-n_min = 10
-n_max = 100
-increment = 10
+n_min = 10_000
+n_max = 100_000
+increment = 10_000
 iterations = 1
 n_list = np.linspace(
     n_min, n_max, num=(n_max - n_min) // increment + 1, dtype=int
