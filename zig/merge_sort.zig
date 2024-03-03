@@ -1,46 +1,7 @@
 const std = @import("std");
+const expect = std.testing.expect;
+const assert = std.debug.assert;
 const print = std.debug.print;
-const ArrayList = std.ArrayList;
-
-fn mergeArrays(arr1: []u32, arr2: []u32, allocator: std.mem.Allocator) ![]u32 {
-    var result = std.ArrayList(u32).init(allocator);
-    defer result.deinit();
-    var i: u32 = 0;
-    var j: u32 = 0;
-    while (i < arr1.len and j < arr2.len) {
-        // print("mergeArrays arr1: {d}\n", .{arr1});
-        // print("mergeArrays arr2: {d}\n", .{arr2});
-        if (i < arr1.len and arr1[i] <= arr2[j]) {
-            try result.append(arr1[i]);
-            i += 1;
-        } else {
-            try result.append(arr2[j]);
-            j += 1;
-        }
-    }
-    for (arr1[i..]) |a1| {
-        try result.append(a1);
-    }
-    for (arr2[j..]) |a2| {
-        try result.append(a2);
-    }
-    // print("mergeArrays result: {d}\n", .{result.items});
-    return result.items[0..];
-}
-
-fn mergeSort(arr: []u32, allocator: std.mem.Allocator) ![]u32 {
-    if (arr.len <= 1) {
-        return arr;
-    }
-    const midpoint = arr.len / 2;
-    print("{d}\n", .{arr});
-    print("{d}\n", .{midpoint});
-    const arr1 = try mergeSort(arr[0..midpoint], allocator);
-    const arr2 = try mergeSort(arr[midpoint..], allocator);
-    const result = try mergeArrays(arr1, arr2, allocator);
-    // print("mergeSort result:{d}\n", .{result[0]});
-    return result;
-}
 
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -49,28 +10,70 @@ pub fn main() !void {
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
 
-    const filepath = args[1];
-    const file = try std.fs.cwd().openFile(filepath, .{});
+    const filePath = args[1];
+    const file = try std.fs.cwd().openFile(filePath, .{});
     defer file.close();
 
-    const read_buf = try file.readToEndAlloc(allocator, 1024 * 1024);
-    defer allocator.free(read_buf);
+    const readBuf = try file.readToEndAlloc(allocator, 1024 * 1024);
+    defer allocator.free(readBuf);
 
-    var iterator = std.mem.split(u8, read_buf, "\n");
+    var iterator = std.mem.split(u8, readBuf, "\n");
 
-    var inputArray = std.ArrayList(u32).init(allocator);
-    defer inputArray.deinit();
+    var inArr = std.ArrayList(u32).init(allocator);
+    defer inArr.deinit();
+    var outArr = std.ArrayList(u32).init(allocator);
+    defer outArr.deinit();
 
     while (iterator.next()) |raw| {
         const n: u32 = try std.fmt.parseInt(u32, raw, 10);
-
         if (@TypeOf(n) == u32) {
-            try inputArray.append(n);
-        } else {
-            // print("Error\n", .{});
+            try inArr.append(n);
+            try outArr.append(n);
         }
     }
 
-    const outputArray = try mergeSort(inputArray.items[0..], allocator);
-    print("{d}\n", .{outputArray});
+    print("IN: {d}\n", .{inArr.items});
+    mergeSort(inArr.items, outArr.items, 0, outArr.items.len, );
+    // print("IN: {d}\n", .{inArr.items});
+    print("OUT: {d}\n", .{outArr.items});
+}
+
+fn mergeSort(inArrItems: []u32, outArrItems: []u32, start: usize, end: usize, ) void {
+    if (end - start <= 1) {
+        return;
+    }
+    const midpoint = (end + start) / 2;
+    mergeSort(inArrItems, outArrItems, start, midpoint);
+    mergeSort(inArrItems, outArrItems, midpoint, end);
+    mergeArrays(inArrItems, outArrItems, start, midpoint, end);
+}
+
+fn mergeArrays(inArrItems: []u32,  outArrItems: []u32, start: usize, midpoint: usize, end: usize,) void {
+    var i = start;
+    var k = start;
+    var j = midpoint;
+
+
+    print("in local: {d}\n", .{inArrItems[start..end]});
+    print("out local: {d}\n", .{outArrItems[start..end]});
+    // print("i and k: {d}\n", .{k});
+    // print("j: {d}\n", .{j});
+    // print("start: {d}\n", .{start});
+    // print("end: {d}\n", .{end});
+
+    // print("while ({d} < {d}) : ({d} += 1)\n", .{k, end, k});
+
+    while (k < end) : (k += 1) { 
+    print("while ({d} < {d}) : ({d} += 1)\n\n", .{k, end, k});
+    print("if ({d} < {d} and ({d} >= {d} or {d} <= {d})) \n\n", .{i, midpoint, j, end, inArrItems[i], inArrItems[j]});
+        if (i < midpoint and (j >= end or inArrItems[i] <= inArrItems[j])) {
+            print("set {d} to {d}\n\n", .{outArrItems[k], inArrItems[i]});
+            outArrItems[k] = inArrItems[i];
+            i = i + 1;
+        } else {
+            print("no: set {d} to {d}\n\n", .{outArrItems[k], inArrItems[j]});
+            outArrItems[k] = inArrItems[j];
+            j = j + 1;
+        }
+    }
 }
