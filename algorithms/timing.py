@@ -3,7 +3,10 @@ import sys
 sys.path.append("./")
 from helpers import utils
 from algorithms.insertion_sort import insertion_sort
-from algorithms.insertion_sort_simple import insertion_sort_simple_np, insertion_sort_simple_list
+from algorithms.insertion_sort_simple import (
+    insertion_sort_simple_np,
+    insertion_sort_simple_list,
+)
 from algorithms.merge_sort import merge_sort
 from algorithms.bubble_sort import bubble_sort
 import pandas as pd
@@ -24,6 +27,10 @@ def c_insertion_sort(input_array: list[int], filepath: str, array_len: int) -> N
 
 def zig_insertion_sort(input_array: list[int], filepath: str, array_len: int) -> None:
     subprocess.call(["zig/insertion_sort", filepath, str(array_len)])
+
+
+def zig_merge_sort(input_array: list[int], filepath: str, array_len: int) -> None:
+    subprocess.call(["zig/merge_sort", filepath, str(array_len)])
 
 
 funcs = [
@@ -47,29 +54,30 @@ funcs = [
     #     "func": insertion_sort_simple_list,
     #     "args": {},
     # },
-    {
-        "func": merge_sort,
-        "args": {
-            "min_leaf": 1,
-        },
-    },
-    {
-        "func": merge_sort,
-        "args": {
-            "min_leaf": 200,
-        },
-    },
+    # {
+    #     "func": merge_sort,
+    #     "args": {
+    #         "min_leaf": 1,
+    #     },
+    # },
+    # {
+    #     "func": merge_sort,
+    #     "args": {
+    #         "min_leaf": 200,
+    #     },
+    # },
     {
         "func": builtin_sort,
         "args": {},
     },
-    {"func": c_insertion_sort, "args": {}},
-    {"func": zig_insertion_sort, "args": {}},
+    # {"func": c_insertion_sort, "args": {}},
+    # {"func": zig_insertion_sort, "args": {}},
+    {"func": zig_merge_sort, "args": {}},
 ]
-n_min = 10_000
-n_max = 100_000
-increment = 10_000
-iterations = 1
+n_min = 1_000_000
+n_max = 20_000_000
+increment = 1_000_000
+iterations = 3
 n_list = np.linspace(
     n_min, n_max, num=(n_max - n_min) // increment + 1, dtype=int
 ).tolist()

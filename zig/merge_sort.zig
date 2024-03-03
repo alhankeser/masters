@@ -12,7 +12,11 @@ pub fn main() !void {
     const file = try std.fs.cwd().openFile(filePath, .{});
     defer file.close();
 
-    const readBuf = try file.readToEndAlloc(allocator, 1024 * 1024);
+    
+    // const rowCount = try std.fmt.parseInt(u32, args[2], 10);
+    const rowCount = args[2];
+    const maxBytes = try std.fmt.parseInt(u32, rowCount, 10) * (rowCount.len + 2);
+    const readBuf = try file.readToEndAlloc(allocator, maxBytes);
     defer allocator.free(readBuf);
 
     var iterator = std.mem.split(u8, readBuf, "\n");
@@ -32,7 +36,9 @@ pub fn main() !void {
 
     // print("IN: {d}\n", .{arr1.items});
     mergeSort(arr1.items, arr2.items, 0, arr2.items.len);
+    _ = arr1.items;
     // print("OUT: {d}\n", .{arr1.items});
+    // return arr1.items;
 }
 
 fn mergeSort(arr1Items: []u32, arr2Items: []u32, start: usize, end: usize, ) void {
