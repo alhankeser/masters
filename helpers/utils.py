@@ -52,12 +52,16 @@ def read_array_file(path: Dict[str, str]) -> List[int]:
 
 def make_array_file(
     n: int,
-    n_min: int = 0,
+    unsigned: bool = True,
     n_max: int = 1,
     name: str = "input",
     file_extension: str = "gz",
 ) -> Dict[str, str]:
     path = get_path(dir="inputs", name=name, file_extension=file_extension)
+    if unsigned:
+        n_min = 0
+    else:
+        n_min = n_max * -1
     arr = get_random_numbers(n, n_min, n_max)
     write_array_to_file(input_array=arr, path=path)
     return path
@@ -72,13 +76,16 @@ def get_timing(
 
 
 def compare_timing(
-    funcs: List[Dict[Any, Any]], n_list: List[int], iterations: int = 1
+    funcs: List[Dict[Any, Any]],
+    n_list: List[int],
+    iterations: int = 1,
+    unsigned: bool = True,
 ) -> List[Dict[Any, Any]]:
     results: List[Dict[Any, Any]] = []
     input_file_name = "compare_timing_input"
     path = make_array_file(
         n=max(n_list),
-        n_min=0,
+        unsigned = unsigned,
         n_max=max(n_list),
         name=input_file_name,
         file_extension="txt",

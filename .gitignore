@@ -3,7 +3,6 @@
 .mypy_cache
 .vscode
 inputs/
-outputs/
 venv
 __pycache__
 !.gitkeep

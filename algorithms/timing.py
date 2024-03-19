@@ -33,6 +33,10 @@ def zig_merge_sort(input_array: list[int], filepath: str, array_len: int) -> Non
     subprocess.call(["zig/merge_sort", filepath, str(array_len)])
 
 
+def zig_max_subarray(input_array: list[int], filepath: str, array_len: int, optimize: int = 0) -> None:
+    subprocess.call(["zig/max_subarray", filepath, str(array_len)])
+
+
 funcs = [
     # {
     #     "func": bubble_sort,
@@ -66,22 +70,26 @@ funcs = [
     #         "min_leaf": 200,
     #     },
     # },
-    {
-        "func": builtin_sort,
-        "args": {},
-    },
+    # {
+    #     "func": builtin_sort,
+    #     "args": {},
+    # },
     # {"func": c_insertion_sort, "args": {}},
     # {"func": zig_insertion_sort, "args": {}},
-    {"func": zig_merge_sort, "args": {}},
+    # {"func": zig_merge_sort, "args": {}},
+    {"func": zig_max_subarray, "args": {}},
+    {"func": zig_max_subarray, "args": {'optimize': 1}},
 ]
-n_min = 1_000_000
-n_max = 20_000_000
-increment = 1_000_000
-iterations = 3
+n_min = 1_000
+n_max = 10_000
+increment = 1_000
+iterations = 1
 n_list = np.linspace(
     n_min, n_max, num=(n_max - n_min) // increment + 1, dtype=int
 ).tolist()
-results = utils.compare_timing(funcs=funcs, n_list=n_list, iterations=iterations)
+results = utils.compare_timing(
+    funcs=funcs, n_list=n_list, iterations=iterations, unsigned=False
+)
 df = pd.DataFrame(results)
 df["func_version"] = df["func"] + df["version"]
 sns.set_theme()
