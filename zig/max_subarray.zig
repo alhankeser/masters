@@ -13,7 +13,6 @@ pub fn main() !void {
     const file = try std.fs.cwd().openFile(filePath, .{});
     defer file.close();
 
-    
     // const rowCount = try std.fmt.parseInt(u32, args[2], 10);
     const rowCount = args[2];
     const maxBytes = try std.fmt.parseInt(u32, rowCount, 10) * (rowCount.len + 2);
@@ -31,54 +30,56 @@ pub fn main() !void {
             try arr.append(n);
         }
     }
-    var maxSubArray: [2]i32 = .{0,0};
+    var maxSubArray: [2]i32 = .{ 0, 0 };
     maxSubArray = maxSubArray;
-    _ = try split(arr.items, 0, arr.items.len - 1,  &maxSubArray);
+    _ = try split(arr.items, 0, arr.items.len - 1, &maxSubArray);
     // _ = try stdout.write(try std.fmt.allocPrint(allocator, "{any}\n", .{maxDiff}));
     _ = try stdout.write(try std.fmt.allocPrint(allocator, "{any}\n", .{maxSubArray}));
 }
 
-fn split(arr: []const i32, start: usize, end: usize, maxSubArray: []i32) ![]i32 {
+fn split(arr: []const i32, start: usize, end: usize, maxSubArray: []i32) !void {
     // print("{d}, {d}\n", .{start, end});
     // print("{any}\n", .{maxSubArray});
     if (end - start <= 1) {
-        return maxSubArray;
+        return;
     }
     const mid = (end + start) / 2;
     _ = try split(arr, start, mid, maxSubArray);
     _ = try split(arr, mid, end, maxSubArray);
-    return merge(arr, start, mid, end, maxSubArray);
+    _ = try merge(arr, start, mid, end, maxSubArray);
 }
 
-fn merge(arr: []const i32, start: usize, mid: usize, end: usize, maxSubArray: []i32) ![]i32 {
-    print("{d}, {d}\n", .{arr[start..mid], arr[mid..end+1]});
+fn merge(arr: []const i32, start: usize, mid: usize, end: usize, maxSubArray: []i32) !void {
+    print("{d}, {d}\n", .{ arr[start..mid], arr[mid .. end + 1] });
     // var maxDiff = maxSubArray[1] - maxSubArray[0];
     var aIndex: usize = start;
-    var bIndex: usize = mid+1;
+    var bIndex: usize = mid;
     // A
-    var aMin: i32 = arr[aIndex];
-    var aMax: i32 = arr[aIndex];
-    var bMin: i32 = arr[bIndex];
-    var bMax: i32 = arr[bIndex];
+    var aMaxDiff: i32 = 0;
+    var bMaxDiff: i32 = 0;
+    var aSubArray: [2]usize = .{start, start};
+    var bSubArray: [2]usize = .{mid, mid};
     while (aIndex < mid - 1) : (aIndex += 1) {
-        print("aIndex: {d}\n", .{arr[aIndex]});
-        if (arr[aIndex] < aMin) {
-            aMin = arr[aIndex];
-        }
-        if (arr[aIndex + 1] > aMax) {
-            aMax = arr[aIndex + 1];
-        }
-    }
-    while (bIndex < end) : (bIndex += 1) {
-        print("bIndex: {d}\n", .{arr[bIndex]});
-        if (arr[bIndex] < bMin) {
-            bMin = arr[bIndex];
-        }
-        if (arr[bIndex + 1] > bMax) {
-            bMax = arr[bIndex + 1];
+        var aCompare = aIndex + 1;
+        while (aCompare < mid) : (aCompare += 1) {
+            if ((arr[aCompare] - arr[aIndex]) > aMaxDiff) {
+                aSubArray = .{aIndex, aCompare};
+                aMaxDiff = arr[aCompare] - arr[aIndex];
+            }
         }
     }
-    print("aMin: {d}, aMax: {d}\n", .{aMin, aMax});
-    print("bMin: {d}, bMax: {d}\n", .{bMin, bMax});
-    return maxSubArray;
+    while (bIndex < end - 1) : (bIndex += 1) {
+        var bCompare = bIndex + 1;
+        while (bCompare < end) : (bCompare += 1) {
+            if ((arr[bCompare] - arr[bIndex]) > bMaxDiff) {
+                bSubArray = .{bIndex, bCompare};
+                bMaxDiff = arr[bCompare] - arr[bIndex];
+            }
+        }
+    }
+    print("aMaxDiff: {d}\n", .{ aMaxDiff });
+    print("bMaxDiff: {d}\n", .{ bMaxDiff });
+    print("aSubArray: {d}\n", .{aSubArray});
+    print("bSubArray: {any}\n", .{bSubArray});
+    print("maxSubArray: {any}\n", .{maxSubArray});
 }
