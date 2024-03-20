@@ -34,8 +34,8 @@ pub fn main() !void {
     maxSubArray = maxSubArray;
     _ = try split(arr.items, 0, arr.items.len - 1, &maxSubArray);
     // _ = try stdout.write(try std.fmt.allocPrint(allocator, "arr: {d}\n", .{arr.items}));
-    // _ = try stdout.write(try std.fmt.allocPrint(allocator, "maxSubArray: {d}\n", .{maxSubArray}));
-    // _ = try stdout.write(try std.fmt.allocPrint(allocator, "maxSubArray values: {d}, {d}\n", .{arr.items[maxSubArray[0]], arr.items[maxSubArray[1]]}));
+    _ = try stdout.write(try std.fmt.allocPrint(allocator, "maxSubArray: {d}\n", .{maxSubArray}));
+    _ = try stdout.write(try std.fmt.allocPrint(allocator, "maxSubArray values: {d}, {d}\n", .{arr.items[maxSubArray[0]], arr.items[maxSubArray[1]]}));
 }
 
 fn split(arr: []const i32, start: usize, end: usize, maxSubArray: []usize) !void {
@@ -45,70 +45,33 @@ fn split(arr: []const i32, start: usize, end: usize, maxSubArray: []usize) !void
         return;
     }
     const mid = (end + start) / 2;
-    _ = try split(arr, start, mid-1, maxSubArray);
+    _ = try split(arr, start, mid, maxSubArray);
     _ = try split(arr, mid, end, maxSubArray);
     _ = try merge(arr, start, mid, end, maxSubArray);
 }
 
 fn merge(arr: []const i32, start: usize, mid: usize, end: usize, maxSubArray: []usize) !void {
-    // print("{d} to {d}\n", .{start, end});
-    // print("{d}, {d}\n", .{ arr[start..mid], arr[mid .. end + 1] });
+    print("{d}, {d}\n", .{ arr[start..mid], arr[mid .. end + 1] });
     
     const maxDiff: i32 = arr[maxSubArray[1]] - arr[maxSubArray[0]];
     var aIndex: usize = start;
     var bIndex: usize = mid;
-    var aMaxDiff: i32 = 0;
-    var bMaxDiff: i32 = 0;
-    var aSubArray: [2]usize = .{start, start};
-    var bSubArray: [2]usize = .{mid, mid};
     var aMinIndex: usize = start;
     var bMaxIndex: usize = mid;
-    while (aIndex < mid - 1) : (aIndex += 1) {
-        var aCompare = aIndex + 1;
-        while (aCompare < mid) : (aCompare += 1) {
-            if ((arr[aCompare] - arr[aIndex]) > aMaxDiff) {
-                aSubArray = .{aIndex, aCompare};
-                aMaxDiff = arr[aCompare] - arr[aIndex];
-            }
-        }
-        // purposefully avoiding usage of max function
+    while (aIndex < mid) : (aIndex += 1) {
         if (arr[aIndex] < arr[aMinIndex]) {
             aMinIndex = aIndex;
         }
     }
-    if (arr[aIndex] < arr[aMinIndex]) {
-        aMinIndex = aIndex;
-    }
-    while (bIndex < end) : (bIndex += 1) {
-        var bCompare = bIndex + 1;
-        while (bCompare <= end) : (bCompare += 1) {
-            if ((arr[bCompare] - arr[bIndex]) > bMaxDiff) {
-                bSubArray = .{bIndex, bCompare};
-                bMaxDiff = arr[bCompare] - arr[bIndex];
-            }
-        }
-        // print("arr[bIndex]: {d}\n", .{ arr[bIndex] });
-        // purposefully avoiding usage of max function
+    while (bIndex <= end) : (bIndex += 1) {
         if (arr[bIndex] > arr[bMaxIndex]) {
             bMaxIndex = bIndex;
         }
     }
-    if (arr[bIndex] > arr[bMaxIndex]) {
-        bMaxIndex = bIndex;
-    }
-    // print("bMaxIndex: {d}\n", .{bMaxIndex});
     const tSubArray: [2]usize = .{aMinIndex, bMaxIndex};
     const tMaxDiff: i32 = arr[bMaxIndex] - arr[aMinIndex];
-    // print("tMaxDiff: {d}\n", .{tMaxDiff});
-    if (aMaxDiff > maxDiff and aMaxDiff > bMaxDiff and aMaxDiff > tMaxDiff) {
-        maxSubArray[0] = aSubArray[0];
-        maxSubArray[1] = aSubArray[1];
-    }
-    else if (bMaxDiff > maxDiff and bMaxDiff > aMaxDiff and bMaxDiff > tMaxDiff) {
-        maxSubArray[0] = bSubArray[0];
-        maxSubArray[1] = bSubArray[1];
-    }
-    else if (tMaxDiff > maxDiff and tMaxDiff > aMaxDiff and tMaxDiff > bMaxDiff) {
+    print("tMaxDiff: {d}\n", .{tMaxDiff});
+    if (tMaxDiff > maxDiff) {
         maxSubArray[0] = tSubArray[0];
         maxSubArray[1] = tSubArray[1];
     }
@@ -116,7 +79,7 @@ fn merge(arr: []const i32, start: usize, mid: usize, end: usize, maxSubArray: []
     // print("aMaxDiff: {d}\n", .{ aMaxDiff });
     // print("bMaxDiff: {d}\n", .{ bMaxDiff });
     // print("aSubArray: {d}\n", .{aSubArray});
-    // print("bSubArray: {any}\n", .{bSubArray});
-    // print("maxDiff: {any}\n", .{maxSubArray});
-    // print("maxSubArray: {any}\n", .{maxSubArray});
+    print("tSubArray: {any}\n", .{tSubArray});
+    print("maxDiff: {any}\n", .{maxDiff});
+    print("maxSubArray: {any}\n", .{maxSubArray});
 }

@@ -78,7 +78,7 @@ funcs = [
     # {"func": zig_insertion_sort, "args": {}},
     # {"func": zig_merge_sort, "args": {}},
     {"func": zig_max_subarray, "args": {}},
-    {"func": zig_max_subarray, "args": {'optimize': 1}},
+    # {"func": zig_max_subarray, "args": {'optimize': 1}},
 ]
 n_min = 1_000
 n_max = 10_000
