@@ -52,71 +52,48 @@ fn split(arr: []const i32, start: usize, end: usize, maxSubArray: []usize) !void
 
 fn merge(arr: []const i32, start: usize, mid: usize, end: usize, maxSubArray: []usize) !void {
     // print("{d} to {d}\n", .{start, end});
-    // print("{d}, {d}\n", .{ arr[start..mid], arr[mid .. end + 1] });
-    
-    const maxDiff: i32 = arr[maxSubArray[1]] - arr[maxSubArray[0]];
-    var aIndex: usize = start;
+    print("{d}, {d}\n", .{ arr[start..mid], arr[mid .. end + 1] });
+    const maxSum: i32 = arr[maxSubArray[1]] + arr[maxSubArray[0]];
+    var aIndex: usize = mid;
     var bIndex: usize = mid;
-    var aMaxDiff: i32 = 0;
-    var bMaxDiff: i32 = 0;
-    var aSubArray: [2]usize = .{start, start};
-    var bSubArray: [2]usize = .{mid, mid};
-    var aMinIndex: usize = start;
+    var aSum: i32 = 0;
+    var bSum: i32 = 0;
+    var aMaxIndex: usize = start;
     var bMaxIndex: usize = mid;
-    while (aIndex < mid - 1) : (aIndex += 1) {
-        var aCompare = aIndex + 1;
-        while (aCompare < mid) : (aCompare += 1) {
-            if ((arr[aCompare] - arr[aIndex]) > aMaxDiff) {
-                aSubArray = .{aIndex, aCompare};
-                aMaxDiff = arr[aCompare] - arr[aIndex];
-            }
+    var tempSum: i32 =  0;
+    // Go from right to left instead of left to right!!!
+    while (aIndex >= start) : (aIndex += 1) {
+        tempSum += arr[aIndex];
+        if (tempSum > aSum) {
+            aSum = tempSum;
+            aMaxIndex = aIndex;
         }
-        // purposefully avoiding usage of max function
-        if (arr[aIndex] < arr[aMinIndex]) {
+        else {
             aMinIndex = aIndex;
         }
     }
-    if (arr[aIndex] < arr[aMinIndex]) {
-        aMinIndex = aIndex;
-    }
-    while (bIndex < end) : (bIndex += 1) {
-        var bCompare = bIndex + 1;
-        while (bCompare <= end) : (bCompare += 1) {
-            if ((arr[bCompare] - arr[bIndex]) > bMaxDiff) {
-                bSubArray = .{bIndex, bCompare};
-                bMaxDiff = arr[bCompare] - arr[bIndex];
-            }
-        }
-        // print("arr[bIndex]: {d}\n", .{ arr[bIndex] });
-        // purposefully avoiding usage of max function
-        if (arr[bIndex] > arr[bMaxIndex]) {
+    tempSum = 0;
+    while (bIndex <= end) : (bIndex += 1) {
+        tempSum += arr[bIndex];
+        if (tempSum > bSum) {
+            bSum = tempSum;
             bMaxIndex = bIndex;
         }
     }
-    if (arr[bIndex] > arr[bMaxIndex]) {
-        bMaxIndex = bIndex;
+    // print("{d}\n", .{bMaxIndex});
+    if (aSum > bSum and aSum > (aSum + bSum) and aSum > maxSum) {
+         maxSubArray[0] = start;
+         maxSubArray[1] = aMaxIndex;
     }
-    // print("bMaxIndex: {d}\n", .{bMaxIndex});
-    const tSubArray: [2]usize = .{aMinIndex, bMaxIndex};
-    const tMaxDiff: i32 = arr[bMaxIndex] - arr[aMinIndex];
-    // print("tMaxDiff: {d}\n", .{tMaxDiff});
-    if (aMaxDiff > maxDiff and aMaxDiff > bMaxDiff and aMaxDiff > tMaxDiff) {
-        maxSubArray[0] = aSubArray[0];
-        maxSubArray[1] = aSubArray[1];
+    else if (bSum > aSum and bSum > (aSum + bSum) and bSum > maxSum) {
+         maxSubArray[0] = mid;
+         maxSubArray[1] = bMaxIndex;
     }
-    else if (bMaxDiff > maxDiff and bMaxDiff > aMaxDiff and bMaxDiff > tMaxDiff) {
-        maxSubArray[0] = bSubArray[0];
-        maxSubArray[1] = bSubArray[1];
+    else if ((aSum + bSum) > maxSum) {
+         maxSubArray[0] = start;
+         maxSubArray[1] = bMaxIndex;
     }
-    else if (tMaxDiff > maxDiff and tMaxDiff > aMaxDiff and tMaxDiff > bMaxDiff) {
-        maxSubArray[0] = tSubArray[0];
-        maxSubArray[1] = tSubArray[1];
-    }
-
-    // print("aMaxDiff: {d}\n", .{ aMaxDiff });
-    // print("bMaxDiff: {d}\n", .{ bMaxDiff });
-    // print("aSubArray: {d}\n", .{aSubArray});
-    // print("bSubArray: {any}\n", .{bSubArray});
-    // print("maxDiff: {any}\n", .{maxSubArray});
-    // print("maxSubArray: {any}\n", .{maxSubArray});
+    print("aSum: {d}\n", .{aSum});
+    print("bSum: {d}\n", .{bSum});
+    print("maxSubArray: {d}\n", .{maxSubArray});
 }
