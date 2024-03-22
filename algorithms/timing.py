@@ -80,9 +80,9 @@ funcs = [
     {"func": zig_max_subarray, "args": {}},
     # {"func": zig_max_subarray, "args": {'optimize': 1}},
 ]
-n_min = 1_000
-n_max = 10_000
-increment = 1_000
+n_min = 10_000
+n_max = 100_000
+increment = 10_000
 iterations = 1
 n_list = np.linspace(
     n_min, n_max, num=(n_max - n_min) // increment + 1, dtype=int
